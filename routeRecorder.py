@@ -18,7 +18,10 @@ from util import find_pattern_sqdiff, draw_rectangle, screenshot, \
                 get_minimap_loc_size, get_player_location_on_minimap, \
                 to_opencv_hsv, load_yaml, override_cfg, is_mac
 from KeyBoardListener import KeyBoardListener
-from GameWindowCapturor import GameWindowCapturor
+if is_mac():
+    from GameWindowCapturorForMac import GameWindowCapturor
+else:
+    from GameWindowCapturor import GameWindowCapturor
 
 class RouteRecorder():
     '''
