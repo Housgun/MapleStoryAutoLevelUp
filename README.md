@@ -66,6 +66,8 @@ Use `read_game_window` for a quick frame capture:
 from window_reader import read_game_window
 frame = read_game_window()
 ```
+Run `window_reader.py` directly and press **F1** to start displaying the
+game window. Press **F2** to stop.
 
 ## Supported Map 
 1. north forest training ground 2(北部森林訓練場2)
