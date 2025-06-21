@@ -66,8 +66,10 @@ Use `read_game_window` for a quick frame capture:
 from window_reader import read_game_window
 frame = read_game_window()
 ```
-Run `window_reader.py` directly and press **F1** to start displaying the
-game window. Press **F2** to stop.
+Run `window_reader.py` directly to preview the MapleStory window.
+Press **F1** to begin capturing frames and **F2** to stop.
+While the window is visible you can press **Esc** to exit.
+Status messages are written both to the console and to ``maplestory_<date>.log``.
 
 ## Supported Map 
 1. north forest training ground 2(北部森林訓練場2)

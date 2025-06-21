@@ -1,3 +1,10 @@
+"""Utility for interactively displaying the MapleStory window.
+
+Run this module directly and press **F1** to start capturing the game window.
+Press **F2** to stop. Press **Esc** inside the display window to quit.
+Captured frames are shown using OpenCV and basic status messages are logged.
+"""
+
 import time
 from threading import Event
 
@@ -6,6 +13,7 @@ from pynput import keyboard
 
 from config.config import Config
 from GameWindowCapturor import GameWindowCapturor
+from logger import logger
 
 
 def read_game_window(timeout: float = 1.0):
@@ -46,12 +54,12 @@ def main():
             if not running.is_set():
                 captor = GameWindowCapturor(Config)
                 running.set()
-                print("Started reading game window")
+                logger.info("Started reading game window")
         elif key == keyboard.Key.f2:
             if running.is_set():
                 stop.set()
                 running.clear()
-                print("Stopped reading game window")
+                logger.info("Stopped reading game window")
 
     listener = keyboard.Listener(on_press=on_press)
     listener.start()
@@ -67,6 +75,7 @@ def main():
             time.sleep(0.1)
 
     cv2.destroyAllWindows()
+    logger.info("Window reader exited")
 
 
 if __name__ == "__main__":
