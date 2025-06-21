@@ -10,11 +10,7 @@ import sys
 import cv2
 import numpy as np
 import pygetwindow as gw
-
-if sys.platform.startswith("win"):
-    from windows_capture import WindowsCapture, Frame, InternalCaptureControl
-else:
-    import mss
+import mss
 
 # local import
 from logger import logger
@@ -31,26 +27,19 @@ class GameWindowCapturor:
 
         self.running = True
 
-        if sys.platform.startswith("win"):
-            # Use windows_capture for Windows
-            self.capture = WindowsCapture(window_name=self.window_title)
-            self.capture.event(self.on_frame_arrived)
-            self.capture.event(self.on_closed)
-            threading.Thread(target=self.capture.start, daemon=True).start()
-        else:
-            # macOS / others: use mss to capture screen region
-            windows = gw.getWindowsWithTitle(self.window_title)
-            if not windows:
-                raise RuntimeError(f"Game window not found: {self.window_title}")
-            win = windows[0]
-            self.monitor = {
-                "top": win.top,
-                "left": win.left,
-                "width": win.width,
-                "height": win.height,
-            }
-            self.sct = mss.mss()
-            threading.Thread(target=self.capture_loop, daemon=True).start()
+        # Locate the game window and start capturing with mss
+        windows = gw.getWindowsWithTitle(self.window_title)
+        if not windows:
+            raise RuntimeError(f"Game window not found: {self.window_title}")
+        win = windows[0]
+        self.monitor = {
+            "top": win.top,
+            "left": win.left,
+            "width": win.width,
+            "height": win.height,
+        }
+        self.sct = mss.mss()
+        threading.Thread(target=self.capture_loop, daemon=True).start()
 
         # Wait briefly for the first frame
         time.sleep(0.1)
@@ -61,17 +50,9 @@ class GameWindowCapturor:
             logger.error("Please use windowed mode & smallest resolution.")
             raise RuntimeError(f"Unexpected window size: {self.frame.shape[:2]}")
 
-    def on_frame_arrived(self, frame, capture_control):
-        '''
-        Frame arrived callback: store frame into buffer with lock.
-        '''
-        with self.lock:
-            self.frame = frame.frame_buffer
-        time.sleep(0.033)  # Cap FPS to ~30
-
     def capture_loop(self):
         '''
-        Capture loop for mss-based grabbing on macOS.
+        Capture loop for grabbing frames with ``mss``.
         '''
         while self.running:
             img = np.array(self.sct.grab(self.monitor))
