@@ -28,9 +28,16 @@ class GameWindowCapturor:
         self.running = True
 
         # Locate the game window and start capturing with mss
-        windows = gw.getWindowsWithTitle(self.window_title)
+        # ``pygetwindow`` may not implement ``getWindowsWithTitle`` on all
+        # platforms.  Fall back to scanning all windows if needed.
+        try:
+            windows = gw.getWindowsWithTitle(self.window_title)
+        except AttributeError:
+            windows = [w for w in gw.getAllWindows() if self.window_title in w.title]
+
         if not windows:
             raise RuntimeError(f"Game window not found: {self.window_title}")
+
         win = windows[0]
         self.monitor = {
             "top": win.top,

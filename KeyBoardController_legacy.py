@@ -93,7 +93,11 @@ class KeyBoardController():
         - True
         - False
         '''
-        active_window = gw.getActiveWindow()
+        try:
+            active_window = gw.getActiveWindow()
+        except AttributeError:
+            # Some platforms may not implement active window query
+            return True
         return active_window is not None and self.window_title in active_window.title
 
     def release_all_key(self):
