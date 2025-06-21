@@ -1,6 +1,6 @@
 import threading
 import time
-import keyboard
+from pynput import keyboard
 import pygetwindow as gw
 
 class KeyBoardController():
@@ -19,6 +19,7 @@ class KeyBoardController():
         self.attack_key = ""
         self.debounce_interval = 1 # second
         self.is_need_screen_shot = False
+        self.controller = keyboard.Controller()
 
         # set up attack key
         if cfg.is_use_aoe:
@@ -28,6 +29,25 @@ class KeyBoardController():
 
         # Start keyboard control thread
         threading.Thread(target=self.run, daemon=True).start()
+
+        listener = keyboard.Listener(on_press=self.on_press)
+        listener.start()
+
+    def on_press(self, key):
+        '''
+        Handle key press events.
+        '''
+        try:
+            key.char
+        except AttributeError:
+            if key == keyboard.Key.f1:
+                if time.time() - self.t_last_toggle > self.debounce_interval:
+                    self.toggle_enable()
+                    self.t_last_toggle = time.time()
+            elif key == keyboard.Key.f2:
+                if time.time() - self.t_last_screenshot > self.debounce_interval:
+                    self.is_need_screen_shot = True
+                    self.t_last_screenshot = time.time()
 
     def toggle_enable(self):
         '''
@@ -43,9 +63,9 @@ class KeyBoardController():
         '''
         Simulates a key press for a specified duration
         '''
-        keyboard.press(key)
+        self.controller.press(key)
         time.sleep(duration)
-        keyboard.release(key)
+        self.controller.release(key)
 
     def disable(self):
         '''
@@ -80,27 +100,16 @@ class KeyBoardController():
         '''
         Release all key
         '''
-        keyboard.release("left")
-        keyboard.release("right")
-        keyboard.release("up")
-        keyboard.release("down")
+        self.controller.release("left")
+        self.controller.release("right")
+        self.controller.release("up")
+        self.controller.release("down")
 
     def run(self):
         '''
         run
         '''
         while True:
-            # Check if F1 key is pressed
-            if  keyboard.is_pressed("F1") and \
-                time.time() - self.t_last_toggle > self.debounce_interval:
-                self.toggle_enable()
-                self.t_last_toggle = time.time()
-
-            # Check if F2 key is pressed
-            if  keyboard.is_pressed("F2") and \
-                time.time() - self.t_last_screenshot > self.debounce_interval:
-                self.is_need_screen_shot = True
-                self.t_last_screenshot = time.time()
 
             # Check if game window is active
             if not self.is_enable or not self.is_game_window_active():
@@ -109,88 +118,88 @@ class KeyBoardController():
 
             # check if is needed to release 'Up' key
             if time.time() - self.t_last_up > self.cfg.up_drag_duration:
-                keyboard.release("up")
+                self.controller.release("up")
 
             # check if is needed to release 'Down' key
             if time.time() - self.t_last_down > self.cfg.down_drag_duration:
-                keyboard.release("down")
+                self.controller.release("down")
 
             if self.command == "walk left":
-                keyboard.release("right")
-                keyboard.press("left")
+                self.controller.release("right")
+                self.controller.press("left")
 
             elif self.command == "walk right":
-                keyboard.release("left")
-                keyboard.press("right")
+                self.controller.release("left")
+                self.controller.press("right")
 
             elif self.command == "jump left":
-                keyboard.release("right")
-                keyboard.press("left")
+                self.controller.release("right")
+                self.controller.press("left")
                 self.press_key(self.cfg.jump_key, 0.02)
-                keyboard.release("left")
+                self.controller.release("left")
 
             elif self.command == "jump right":
-                keyboard.release("left")
-                keyboard.press("right")
+                self.controller.release("left")
+                self.controller.press("right")
                 self.press_key(self.cfg.jump_key, 0.02)
-                keyboard.release("right")
+                self.controller.release("right")
 
             elif self.command == "jump down":
-                keyboard.release("right")
-                keyboard.release("left")
-                keyboard.press("down")
+                self.controller.release("right")
+                self.controller.release("left")
+                self.controller.press("down")
                 self.press_key(self.cfg.jump_key, 0.02)
-                keyboard.release("down")
+                self.controller.release("down")
 
             elif self.command == "jump":
-                keyboard.release("left")
-                keyboard.release("right")
+                self.controller.release("left")
+                self.controller.release("right")
                 self.press_key(self.cfg.jump_key, 0.02)
 
             elif self.command == "up":
-                keyboard.release("down")
-                keyboard.press("up")
+                self.controller.release("down")
+                self.controller.press("up")
                 self.t_last_up = time.time()
 
             elif self.command == "down":
-                keyboard.release("up")
-                keyboard.press("down")
+                self.controller.release("up")
+                self.controller.press("down")
                 self.t_last_down = time.time()
 
             if self.command == "teleport left":
-                keyboard.release("right")
-                keyboard.press("left")
+                self.controller.release("right")
+                self.controller.press("left")
                 self.press_key(self.cfg.teleport_key, 0.02)
 
             elif self.command == "teleport right":
-                keyboard.release("left")
-                keyboard.press("right")
+                self.controller.release("left")
+                self.controller.press("right")
                 self.press_key(self.cfg.teleport_key, 0.02)
 
             elif self.command == "teleport up":
-                keyboard.press("up")
+                self.controller.press("up")
                 self.press_key(self.cfg.teleport_key, 0.02)
-                keyboard.release("up")
+                self.controller.release("up")
 
             elif self.command == "teleport down":
-                keyboard.press("down")
+                self.controller.press("down")
                 self.press_key(self.cfg.teleport_key, 0.02)
-                keyboard.release("down")
+                self.controller.release("down")
 
             elif self.command == "attack":
                 self.press_key(self.attack_key, 0.02)
 
             elif self.command == "attack left":
-                keyboard.release("right")
-                keyboard.press("left")
+                self.controller.release("right")
+                self.controller.press("left")
                 self.press_key(self.attack_key, 0.02)
-                keyboard.release("left")
+                self.controller.release("left")
 
             elif self.command == "attack right":
-                keyboard.release("left")
-                keyboard.press("right")
+                self.controller.release("left")
+                self.controller.press("right")
                 self.press_key(self.attack_key, 0.02)
-                keyboard.release("right")
+                self.controller.release("right")
 
             elif self.command == "stop":
                 self.release_all_key()
