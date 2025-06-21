@@ -57,7 +57,15 @@ python mapleStoryAutoLevelUp.py --map lost_time_1 --monsters evolved_ghost --att
 Note that after script execution, you need to click back to Maple Story game window (Make sure the game windows is your active window)
 
 You can press 'F1' to pasue/continue the script control
+
 You can press 'F2' to take a screenshot, which will save to scrennshot/
+
+## Read Game Window
+Use `read_game_window` for a quick frame capture:
+```python
+from window_reader import read_game_window
+frame = read_game_window()
+```
 
 ## Supported Map 
 1. north forest training ground 2(北部森林訓練場2)
