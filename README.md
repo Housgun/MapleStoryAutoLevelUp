@@ -71,6 +71,10 @@ Press **F1** to begin capturing frames and **F2** to stop.
 While the window is visible you can press **Esc** to exit.
 Status messages are written both to the console and to ``maplestory_<date>.log``.
 
+If you want to observe the full bot logic without sending any keyboard
+input, run ``mapleStoryObserver.py``. It behaves like the main script but
+keeps automation disabled and simply logs detected information each frame.
+
 ## Supported Map 
 1. north forest training ground 2(北部森林訓練場2)
 2. fire land 2(火焰之地2)
