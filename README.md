@@ -9,7 +9,7 @@ An auto leveling up script for Maple Story Artale
 This work purely-based on Computer Vision technique, it doesn't required access game's memory. Instead, it detects image pattern(i.e., player nametag and monsters) on game window screen and send simulated keyboard command to the game to control player's character.
 
 ## Environment
-Windows11
+Tested on Windows 11. Basic support for macOS is provided using `mss` for screen capture.
 
 Python3.12
 

@@ -4,4 +4,5 @@ numpy
 windows-capture
 pygetwindow
 pyautogui
+mss
 pynput
